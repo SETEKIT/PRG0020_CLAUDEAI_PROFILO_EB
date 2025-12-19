@@ -16,7 +16,13 @@ PRG0020_CLAUDEAI_PROFILO_EB/
 │   ├── sync-push.sh        # Local → Repository
 │   ├── sync-pull.sh        # Repository → Local
 │   ├── backup.sh           # Backup completo
+│   ├── restore.sh          # Restore con menu selezione
 │   └── export-chats.py     # Export chat in Markdown
+├── Addestramento_con_Documenti_di_Progetto/
+│   ├── templates/          # Template profili vuoti
+│   ├── esempi/             # Profili esempio (PRF999)
+│   ├── scripts/            # Script creazione profili
+│   └── README.md           # Guida addestramento
 ├── backups/                # Backup locali
 └── README.md
 ```
@@ -104,11 +110,46 @@ git pull
 ./scripts/export-chats.py --session <session-id>
 ```
 
+## Creare Profili Personalizzati
+
+Puoi creare profili custom addestrati con i documenti dei tuoi progetti.
+
+### Quick Start Addestramento
+
+```bash
+cd Addestramento_con_Documenti_di_Progetto
+
+# 1. Crea nuovo profilo con wizard
+./scripts/crea-profilo.sh
+
+# 2. Importa documenti dal progetto
+./scripts/importa-documenti.sh PRF100 /path/to/progetto/docs --standards
+
+# 3. Valida il profilo
+./scripts/valida-profilo.sh esempi/PRF100-mio-profilo.md
+
+# 4. Installa
+cp esempi/PRF100-mio-profilo.md ~/.claude/profiles/
+```
+
+### Script Addestramento
+
+| Script | Descrizione |
+|--------|-------------|
+| `crea-profilo.sh` | Wizard interattivo creazione profilo |
+| `importa-documenti.sh` | Importa docs di progetto nel profilo |
+| `valida-profilo.sh` | Verifica correttezza profilo |
+
+### Profilo Esempio
+
+Vedi `Addestramento_con_Documenti_di_Progetto/esempi/PRF999-addestramento-esempio.md` per un esempio completo di profilo addestrato con documenti di progetto.
+
 ## Note
 
 - Dopo sync-pull, riavviare Claude Code per applicare le modifiche
 - I backup vengono salvati in `backups/` con timestamp
 - Il file `.sync-metadata.json` traccia l'ultimo push
+- Profili max ~4000 parole per migliori performance
 
 ---
 Autore: Eliseo Bosco
