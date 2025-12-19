@@ -1,0 +1,52 @@
+# =============================================================================
+# SECURITY: Exclude all sensitive data from git
+# =============================================================================
+
+# Backup directory - contains session data with potential API keys
+backups/
+
+# Session logs - may contain sensitive data
+*.jsonl
+
+# Project session directories
+projects/
+
+# History files
+history.jsonl
+
+# Stats cache
+stats-cache.json
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Environment files
+.env
+.env.*
+*.env
+
+# API keys and credentials
+*credentials*
+*secret*
+*token*
+*.key
+*.pem
+
+# Debug logs
+debug/
+*.log
