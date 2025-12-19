@@ -1,202 +1,114 @@
-# PRG0020_CLAUDEAI_PROFILO_EB
+# PRG0020 - Claude Code Config Sync
 
-Strumenti per sincronizzare e gestire la configurazione di Claude Code tra postazioni Mac multiple.
+Sincronizzazione configurazioni Claude Code tra postazioni Mac.
 
-## Struttura Progetto
+## Struttura
 
 ```
 PRG0020_CLAUDEAI_PROFILO_EB/
+├── claude-config/           # Configurazioni sincronizzate
+│   ├── profiles/           # Profili sicurezza (PRF01-PRF08)
+│   ├── commands/           # Slash commands
+│   ├── hooks/              # Scripts hook
+│   └── settings.json       # Impostazioni Claude
 ├── scripts/
-│   ├── backup-claude-config.sh    # Backup completo configurazioni
-│   ├── restore-claude-config.sh   # Restore da backup
-│   ├── sync-config.sh             # Sincronizzazione tra postazioni
-│   └── export-chats.py            # Export chat in Markdown
-├── backups/                       # Backup locali
-├── exports/                       # Chat esportate
-├── sync/                          # Cartella sincronizzazione (da condividere)
-└── docs/                          # Documentazione aggiuntiva
+│   ├── install.sh          # Setup nuovo Mac
+│   ├── sync-push.sh        # Local → Repository
+│   ├── sync-pull.sh        # Repository → Local
+│   ├── backup.sh           # Backup completo
+│   └── export-chats.py     # Export chat in Markdown
+├── backups/                # Backup locali
+└── README.md
 ```
-
-## Configurazione Claude Code
-
-La configurazione di Claude Code si trova in `~/.claude/`:
-
-| Directory/File | Contenuto | Sincronizzabile |
-|----------------|-----------|-----------------|
-| `profiles/` | Profili security (PRF01-PRF08) | Si |
-| `commands/` | Slash commands personalizzati | Si |
-| `hooks/` | Hook di automazione | Si |
-| `settings.json` | Impostazioni globali | Si |
-| `history.jsonl` | Indice cronologia comandi | Opzionale |
-| `projects/` | Sessioni chat complete (.jsonl) | Opzionale |
 
 ## Quick Start
 
-### 1. Setup iniziale (postazione principale)
+### Setup Nuovo Mac
 
 ```bash
-cd ~/AI-WORKSPACE/projects/PRG0020_CLAUDEAI_PROFILO_EB
+# 1. Clona il repository
+cd ~
+git clone https://github.com/SETEKIT/PRG0020_CLAUDEAI_PROFILO_EB.git
 
-# Rendi eseguibili gli script
-chmod +x scripts/*.sh
+# 2. Installa configurazioni
+cd PRG0020_CLAUDEAI_PROFILO_EB
+./scripts/install.sh
 
-# Esegui primo backup
-./scripts/backup-claude-config.sh
-
-# Push nella cartella sync
-./scripts/sync-config.sh push
+# 3. Riavvia Claude Code
 ```
 
-### 2. Setup su nuova postazione
+### Sincronizzazione Giornaliera
 
+**Dal Mac principale (dopo modifiche):**
 ```bash
-# Clona/copia questo progetto sulla nuova postazione
-# Poi esegui il pull delle configurazioni
-
-cd ~/AI-WORKSPACE/projects/PRG0020_CLAUDEAI_PROFILO_EB
-chmod +x scripts/*.sh
-./scripts/sync-config.sh pull
+cd ~/PRG0020_CLAUDEAI_PROFILO_EB
+./scripts/sync-push.sh
+git add -A && git commit -m "sync: $(date '+%Y-%m-%d')" && git push
 ```
 
-## Utilizzo Script
-
-### Backup Completo
-
+**Su altri Mac:**
 ```bash
-# Backup nella cartella default (./backups)
-./scripts/backup-claude-config.sh
-
-# Backup in cartella specifica
-./scripts/backup-claude-config.sh /path/to/backup/dir
+cd ~/PRG0020_CLAUDEAI_PROFILO_EB
+git pull
+./scripts/sync-pull.sh
 ```
 
-### Restore da Backup
+## Scripts
 
-```bash
-./scripts/restore-claude-config.sh ./backups/claude-config-20251219_120000
+| Script | Descrizione |
+|--------|-------------|
+| `install.sh` | Prima installazione su nuovo Mac |
+| `sync-push.sh` | Copia config locali → repository |
+| `sync-pull.sh` | Copia config repository → locali |
+| `backup.sh` | Crea backup completo in `backups/` |
+| `export-chats.py` | Esporta chat in formato Markdown |
+
+## Profili Disponibili
+
+| Codice | Nome | Uso |
+|--------|------|-----|
+| PRF01 | Penetration Testing | Test di sicurezza autorizzati |
+| PRF02 | Red Team | Simulazione attacchi |
+| PRF03 | Threat Intelligence | Analisi minacce |
+| PRF04 | Incident Response | Gestione incidenti |
+| PRF05 | Blue Team | Difesa e monitoraggio |
+| PRF06 | Compliance Audit | Audit conformità |
+| PRF07 | Secure Development | Sviluppo sicuro |
+| PRF08 | General | Uso generale |
+
+## Slash Commands
+
+```
+/profili          # Lista profili disponibili
+/profilo PRF01    # Carica profilo specifico
+/security-check   # Quick security check
 ```
 
-### Sincronizzazione tra Postazioni
+## Configurazioni Sincronizzate
 
-```bash
-# Mostra stato attuale
-./scripts/sync-config.sh status
+- `~/.claude/profiles/` - Profili di sicurezza
+- `~/.claude/commands/` - Comandi slash personalizzati
+- `~/.claude/hooks/` - Hook di automazione
+- `~/.claude/settings.json` - Impostazioni
 
-# Carica configurazioni locali (da postazione principale)
-./scripts/sync-config.sh push
-
-# Scarica configurazioni (su altre postazioni)
-./scripts/sync-config.sh pull
-
-# Mostra differenze
-./scripts/sync-config.sh diff
-```
-
-### Export Chat
+## Export Chat
 
 ```bash
 # Lista sessioni disponibili
-python3 scripts/export-chats.py --list
-
-# Esporta indice cronologia
-python3 scripts/export-chats.py --history
-
-# Esporta una sessione specifica
-python3 scripts/export-chats.py -s <session-id>
+./scripts/export-chats.py --list
 
 # Esporta tutte le sessioni
-python3 scripts/export-chats.py --all
+./scripts/export-chats.py --all -o ./exports
 
-# Output in cartella specifica
-python3 scripts/export-chats.py --all -o ./exports
+# Esporta sessione specifica
+./scripts/export-chats.py --session <session-id>
 ```
 
-## Archiviazione Chat
+## Note
 
-Le chat di Claude Code sono salvate in formato JSONL in `~/.claude/projects/`.
-
-**Formato dei file:**
-- `history.jsonl` - Indice dei comandi utente (input)
-- `projects/<project-path>/<session-id>.jsonl` - Sessioni complete
-
-**Opzioni per archiviare le chat:**
-
-1. **Export Markdown** (consigliato per lettura)
-   ```bash
-   python3 scripts/export-chats.py --all -o ./exports
-   ```
-
-2. **Backup raw JSONL** (per restore completo)
-   ```bash
-   ./scripts/backup-claude-config.sh
-   ```
-
-3. **Sincronizzazione cloud** - Metti la cartella `sync/` su iCloud/Dropbox/Google Drive
-
-## Sincronizzazione Multi-Postazione
-
-### Metodo 1: Cartella Cloud Condivisa
-
-1. Metti questo progetto in una cartella sincronizzata (iCloud, Dropbox, etc.)
-2. Su ogni postazione, esegui:
-   ```bash
-   # Imposta variabile ambiente (aggiungi a .zshrc)
-   export CLAUDE_SYNC_DIR="$HOME/path/to/PRG0020_CLAUDEAI_PROFILO_EB/sync"
-   ```
-3. Usa `sync-config.sh push/pull` per sincronizzare
-
-### Metodo 2: Git Repository
-
-1. Inizializza git in questo progetto
-2. Aggiungi la cartella `sync/` al repo
-3. Push/pull su ogni postazione
-
-### Metodo 3: Backup Manuale
-
-1. Esegui backup su postazione principale
-2. Copia la cartella backup sulla nuova postazione
-3. Esegui restore
-
-## Note Importanti
-
-- **Riavvia Claude Code** dopo ogni restore/pull per applicare le modifiche
-- Le **sessioni chat** contengono dati sensibili - gestiscile con cura
-- I **profili security** sono personalizzati per il tuo workflow
-- Gli **hook** potrebbero richiedere adattamenti per path diversi
-
-## Struttura ~/.claude
-
-```
-~/.claude/
-├── profiles/                 # Profili security
-│   ├── PRF01-penetration-testing.md
-│   ├── PRF02-red-team.md
-│   └── ...
-├── commands/                 # Slash commands
-│   ├── profilo.md
-│   ├── profili.md
-│   └── security-check.md
-├── hooks/                    # Hook automazione
-│   └── profile-selector.sh
-├── settings.json             # Configurazioni
-├── history.jsonl             # Cronologia comandi
-└── projects/                 # Sessioni chat
-    └── <project-path>/
-        └── <session-id>.jsonl
-```
-
-## Troubleshooting
-
-**Le configurazioni non si applicano dopo il restore**
-- Chiudi e riapri Claude Code
-
-**Errore permessi sugli script**
-- Esegui: `chmod +x scripts/*.sh`
-
-**Directory sync non trovata**
-- Imposta `CLAUDE_SYNC_DIR` o usa il path default
+- Dopo sync-pull, riavviare Claude Code per applicare le modifiche
+- I backup vengono salvati in `backups/` con timestamp
+- Il file `.sync-metadata.json` traccia l'ultimo push
 
 ---
-
 Autore: Eliseo Bosco
-Progetto: PRG0020_CLAUDEAI_PROFILO_EB
